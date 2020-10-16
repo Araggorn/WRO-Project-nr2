@@ -11,8 +11,6 @@ public class Main00 {
         DbUtil.getConnection();
         System.out.println(DbUtil.read(1));
 
-
-
     }
 }
 
