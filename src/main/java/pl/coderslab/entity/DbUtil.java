@@ -1,3 +1,6 @@
+package pl.coderslab.entity;
+
+import org.mindrot.jbcrypt.BCrypt;
 import pl.coderslab.entity.User;
 import pl.coderslab.entity.UserDao;
 
@@ -29,7 +32,7 @@ public class DbUtil {
         }
     }
 
-    public String hashPassword(String password) {
+    public static String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
@@ -40,7 +43,7 @@ public class DbUtil {
                     conn.prepareStatement(UserDao.CREATE_USER_QUERY, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
+            statement.setString(3, hashPassword(user.getPassword()));
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -53,7 +56,7 @@ public class DbUtil {
         }
     }
 
-    public User read(int userId) {
+    public static User read(int userId) {
 
         try (Connection conn = DbUtil.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(UserDao.READ_USER_QUERY);
@@ -65,7 +68,7 @@ public class DbUtil {
                 user.setUsername(resultSet.getString("username"));
                 user.setEmail(resultSet.getString("email"));
                 user.setPassword(resultSet.getString("password"));
-                return user;
+                return (user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,12 +77,12 @@ public class DbUtil {
     }
 
 
-    public void update(User user) {
+    public static void update(User user) {
         try (Connection conn = DbUtil.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(UserDao.UPDATE_USER_QUERY);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
+            statement.setString(3, hashPassword(user.getPassword()));
             statement.setInt(4, user.getId());
             statement.executeUpdate();
         } catch (SQLException exception) {
@@ -88,7 +91,7 @@ public class DbUtil {
 
     }
 
-    public User[] findAll() {
+    public static User[] findAll() {
         try (Connection conn = DbUtil.getConnection()) {
             User[] users = new User[0];
             PreparedStatement statement = conn.prepareStatement(UserDao.FIND_ALL);
@@ -108,9 +111,20 @@ public class DbUtil {
         }
     }
 
-    private User[] addToArray(User user, User[] users) {
+    private static User[] addToArray(User user, User[] users) {
         users = Arrays.copyOf(users, users.length + 1);
         users[users.length - 1] = user;
     return users;
+    }
+
+    public void delete(int userId) {
+
+        try (Connection conn = DbUtil.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(UserDao.DELETE_USER_QUERY);
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
