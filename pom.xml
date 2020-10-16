@@ -7,6 +7,16 @@
     <groupId>pl.coderslab</groupId>
     <artifactId>WRO-Project-nr2</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <properties>
+        <maven.compiler.source>12</maven.compiler.source>
+        <maven.compiler.target>12</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.21</version>
+        </dependency>
+    </dependencies>
 
 </project>
